@@ -1,5 +1,6 @@
 import yaml
 import requests
+import pandas as pd
 
 class OwlracleConnection:
     def __init__(self, config_file='config.yaml'):
@@ -43,9 +44,33 @@ class OwlracleConnection:
         try:
             res = requests.get(url)
             data = res.json()
+            data = self.flatten_json_data(data)
             return data
         except:
             print("Error: Connection to the Owlracle API failed")
             return None
 
+    def flatten_json_data(self, json_data):
+        """Flattes the JSON data and returns a pandas dataframe"""
+
+        flat_data = []
+
+        print(json_data)
+
+        for candle in json_data['candles']:
+            flat_candle = {
+                'Timestamp': candle['timestamp'],
+                'GasPriceOpen': candle['gasPrice']['open'],
+                'GasPriceClose': candle['gasPrice']['close'],
+                'GasPriceLow': candle['gasPrice']['low'],
+                'GasPriceHigh': candle['gasPrice']['high'],
+                'avgGas': candle['avgGas'],
+                'Samples': candle['samples']
+            }
+            flat_data.append(flat_candle)
+
+        # Create the pandas DataFrame
+        df = pd.DataFrame(flat_data)
+
+        return df
     
