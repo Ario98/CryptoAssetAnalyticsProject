@@ -1,13 +1,13 @@
-import json
-import yaml
+from owlracle import OwlracleConnection
 import requests
-from web3 import Web3
-import matplotlib.pyplot as plt
-from datetime import datetime, timedelta
-import pandas as pd
-from decimal import Decimal
-from infura_con import EthereumConnection
 
-# get the connection to the ethereum node
-eth_con = EthereumConnection()  
+"""network = 'eth'; # could be any supported network
+key = 'c8d65f83319b4b04837d2b1cdca73e64'; # fill your api key here
+res = requests.get('https://api.owlracle.info/v4/{}/history?from=1609459261&to=1640822461&candles=100&apikey={}'.format(network, key))
+data = res.json()
+print(data)"""
+
+conn = OwlracleConnection()
+data = conn.get_average_gas_price('eth', 1609459261, 1640822461)
+print(data)
 
