@@ -32,12 +32,17 @@ plt.figure(figsize=(10,6))
 plt.plot(data_complete['Timestamp'], data_complete['average_gas_price'], label='Average Gas Price')
 plt.title('Average Gas Price Over Time')
 plt.xlabel('Time')
-plt.ylabel('Average Gas Price (Gwei))')
+plt.ylabel('Average Gas Price (Gwei)')
 plt.legend()
 plt.grid()
 
 # Rotate and resize X-axis labels
 plt.xticks(rotation=45, fontsize='small')
+
+# Add a vertical line at a specific date
+significant_event_date = pd.to_datetime('2021-08-05')  # Replace with your date
+plt.axvline(x=significant_event_date, color='red', linestyle='--', label='London Upgrade')
+plt.legend()
 
 plt.show()
 
