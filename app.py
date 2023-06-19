@@ -74,10 +74,12 @@ class EthereumAnalysisApp:
         """)
 
     def graphical_comparison(self):
-
         data = load_data()
 
         data['Date'] = pd.to_datetime(data['Date'])
+
+        # Resample data on a weekly basis
+        data = data.resample('W', on='Date').mean()
 
         st.header("Graphical Comparison")
 
@@ -85,16 +87,16 @@ class EthereumAnalysisApp:
         st.write("The average gas price (in Gwei) graph illustrates the fluctuation in gas prices over time, providing insights into the cost of Ethereum network transactions. This visual representation helps users analyze trends and make informed decisions based on historical gas price data.")
             
         # Select the gas price metric
-        selected_metric = st.selectbox("Select Gas Price Metric", ['GasPriceOpen', 'GasPriceClose', 'GasPriceLow', 'GasPriceHigh', 'average_gas_price'])
+        selected_metric = st.selectbox("Select Gas Price Metric", ['average_gas_price', 'GasPriceOpen', 'GasPriceClose', 'GasPriceLow', 'GasPriceHigh'])
 
         # Highlight the date of the update (August 5th, 2021)
         update_date = pd.to_datetime('2021-08-05')
 
         # Filter data after the update date
-        data_after_update = data[data['Date'] >= update_date]
+        data_after_update = data[data.index >= update_date]
 
         # Calculate average gas price before and after the update
-        avg_gas_price_before_update = data[data['Date'] < update_date][selected_metric].mean()
+        avg_gas_price_before_update = data[data.index < update_date][selected_metric].mean()
         avg_gas_price_after_update = data_after_update[selected_metric].mean()
 
         # Determine the color for the average gas price text based on the price change
@@ -103,20 +105,35 @@ class EthereumAnalysisApp:
         # Determine the arrow symbol based on the price change
         arrow_symbol = "↑" if avg_gas_price_after_update > avg_gas_price_before_update else "↓"
 
+        # Calculate Volatility of selected metric before and after the update
+        volatility_before_update = data[data.index < update_date][selected_metric].std()
+        volatility_after_update = data_after_update[selected_metric].std()
+
+        # Determine the color for the volatility text based on the price change
+        volatility_color = "red" if volatility_after_update > volatility_before_update else "green"
+
+        # Determine the arrow symbol for volatility based on the price change
+        volatility_arrow_symbol = "↑" if volatility_after_update > volatility_before_update else "↓"
+
         # Display average gas price before and after the update
         col1, col2 = st.columns(2)
         with col1:
-            st.subheader(f"Average Gas Price Before Update ({selected_metric})")
+            st.subheader(f"Average ({selected_metric}) Before Update")
             st.markdown(f"<h2>{avg_gas_price_before_update:.2f} Gwei</h2>", unsafe_allow_html=True)
+            st.subheader(f"Volatility Before Update")
+            st.markdown(f"<h2>{volatility_before_update:.2f}%</h2>", unsafe_allow_html=True)
         with col2:
             st.subheader("Average Gas Price After Update")
             st.markdown(f"<h2 style='color:{avg_gas_price_color}'>{avg_gas_price_after_update:.2f} Gwei {arrow_symbol}</h2>", unsafe_allow_html=True)
+            st.subheader("Volatility After Update")
+            st.markdown(f"<h2 style='color:{volatility_color}'>{volatility_after_update:.2f}% {volatility_arrow_symbol}</h2>", unsafe_allow_html=True)
 
         # Create the graph
         fig = go.Figure()
 
         # Add a trace for the selected metric
-        fig.add_trace(go.Scatter(x=data['Date'], y=data[selected_metric], mode='lines', name=selected_metric))
+        fig.add_trace(go.Scatter(x=data.index, y=data[selected_metric], mode='lines', name=selected_metric, fill='tozeroy',
+                                fillcolor='rgba(0, 100, 80, 0.2)'))  # Choose an RGBA color for the gradient
 
         # Add a vertical line for the update date
         fig.add_shape(type='line', x0=update_date, x1=update_date, y0=0, y1=data[selected_metric].max(),
@@ -128,7 +145,6 @@ class EthereumAnalysisApp:
 
         # Show the graph
         st.plotly_chart(fig)
-
 
 
     def statistical_comparison(self):
