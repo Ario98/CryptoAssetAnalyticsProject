@@ -20,7 +20,7 @@ gas_data['average_gas_price'] = gas_data[['GasPriceOpen', 'GasPriceClose', 'GasP
 
 # Load the trading volume data - USD - https://www.kaggle.com/datasets/kapturovalexander/bitcoin-and-ethereum-prices-from-start-to-2023?select=Ethereum+prices.csv
 trading_volume = pd.read_csv('data/pricesdata.csv', sep=',')
-trading_volume.rename(columns={'Open': 'EthPriceOpenUSD', 'High': 'EthPriceHighUSD', 'Low': 'EthPriceLowUSD', 'Close': 'EthPriceCloseUSD', 'Adj Close': 'EthPriceAdjustedCloseUSD', 'Volume': 'EthVolumeUSD'}, inplace=True)
+trading_volume.rename(columns={'Open': 'EthPriceOpenUSD', 'High': 'EthPriceHighUSD', 'Low': 'EthPriceLowUSD', 'Close': 'EthPriceCloseUSD', 'Adj Close': 'EthPriceAdjustedCloseUSD', 'Volume': 'EthVolume'}, inplace=True)
 
 # Load etherscan data - https://etherscan.io/charts
 # Load average transaction data

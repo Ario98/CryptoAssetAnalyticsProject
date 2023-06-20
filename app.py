@@ -15,8 +15,8 @@ def load_data():
     # Convert the Date column to datetime
     data['Date'] = pd.to_datetime(data['Date'])
 
-    # Resample data on a weekly basis
-    data = data.resample('W', on='Date').mean()
+    # Resample data on a weekly basis and forward fill any missing values
+    data = data.resample('W', on='Date').mean().ffill()
 
     # Highlight the date of the update (August 5th, 2021)
     update_date = pd.to_datetime('2021-08-05')
@@ -140,7 +140,7 @@ class EthereumAnalysisApp:
 
         # Add a trace for the selected metric
         fig.add_trace(go.Scatter(x=data.index, y=data[selected_metric], mode='lines', name=selected_metric, fill='tozeroy',
-                                fillcolor='rgba(173, 216, 230, 0.3)'))  # Choose an RGBA color for the gradient
+                                fillcolor='rgba(173, 216, 230, 0.2)'))  # Choose an RGBA color for the gradient
 
         # Add a vertical line for the update date
         fig.add_shape(type='line', x0=update_date, x1=update_date, y0=0, y1=data[selected_metric].max(),
@@ -167,8 +167,8 @@ class EthereumAnalysisApp:
         """)
 
         # Calculate average trading volume before and after the update
-        avg_trading_volume_before_update = data[data.index < update_date]['Volume'].mean()
-        avg_trading_volume_after_update = data[data.index >= update_date]['Volume'].mean()
+        avg_trading_volume_before_update = data[data.index < update_date]['EthVolume'].mean()
+        avg_trading_volume_after_update = data[data.index >= update_date]['EthVolume'].mean()
 
         # Determine the color for the average trading volume text based on the volume change
         avg_trading_volume_color = "green" if avg_trading_volume_after_update > avg_trading_volume_before_update else "red"
@@ -189,11 +189,11 @@ class EthereumAnalysisApp:
         fig = go.Figure()
 
         # Add a trace for the trading volume
-        fig.add_trace(go.Scatter(x=data.index, y=data['Volume'], mode='lines', name='Trading Volume', fill='tozeroy',
-                                fillcolor='rgba(173, 216, 230, 0.3)'))  # Choose an RGBA color for the gradient
+        fig.add_trace(go.Scatter(x=data.index, y=data['EthVolume'], mode='lines', name='Trading Volume', fill='tozeroy',
+                                fillcolor='rgba(173, 216, 230, 0.2)'))  # Choose an RGBA color for the gradient
 
         # Add a vertical line for the update date
-        fig.add_shape(type='line', x0=update_date, x1=update_date, y0=0, y1=data['Volume'].max(),
+        fig.add_shape(type='line', x0=update_date, x1=update_date, y0=0, y1=data['EthVolume'].max(),
                     line=dict(color='orange', dash='dash'), name='Update Date')
 
         # Configure the layout
@@ -245,7 +245,7 @@ class EthereumAnalysisApp:
 
         # Add a trace for the transaction amounts
         fig1.add_trace(go.Scatter(x=data.index, y=data['TransactionsAmount'], mode='lines', name='Transactions Amount', fill='tozeroy',
-                                fillcolor='rgba(173, 216, 230, 0.3)'))  # Choose an RGBA color for the gradient
+                                fillcolor='rgba(173, 216, 230, 0.2)'))  # Choose an RGBA color for the gradient
 
         # Add a vertical line for the update date
         fig1.add_shape(type='line', x0=update_date, x1=update_date, y0=0, y1=data['TransactionsAmount'].max() * 1.5,
@@ -274,7 +274,7 @@ class EthereumAnalysisApp:
         fig2 = go.Figure()
 
         # Define the color gradients for each line
-        colors = ['rgba(173, 216, 230, 0.3)', 'rgba(144, 238, 144, 0.3)', 'rgba(255, 192, 203, 0.3)']
+        colors = ['rgba(173, 216, 230, 0.2)', 'rgba(144, 238, 144, 0.2)', 'rgba(255, 192, 203, 0.2)']
 
         # Select the lines to display
         selected_lines = st.multiselect("Select User Analysis Lines", ['UniqueAddressTotalCount', 'UniqueAddressReceiveCount', 'UniqueAddressSentCount'],
@@ -320,7 +320,7 @@ class EthereumAnalysisApp:
 
         # Add a trace for the Daily ETH Burned
         fig3.add_trace(go.Scatter(x=data_after_update.index, y=data_after_update['DailyEthBurnt'], mode='lines', name='Daily ETH Burned', fill='tozeroy',
-                                fillcolor='rgba(173, 216, 230, 0.3)'))  # Light blue color for the gradient
+                                fillcolor='rgba(173, 216, 230, 0.2)'))  # Light blue color for the gradient
 
         # Configure the layout
         fig3.update_layout(title='Daily ETH Burned Analysis', xaxis_title='Date', yaxis_title='ETH Burned',
@@ -365,7 +365,7 @@ class EthereumAnalysisApp:
 
         # Add a trace for the Block Size
         fig4.add_trace(go.Scatter(x=data.index, y=data['BlockSize'], mode='lines', name='Block Size', fill='tozeroy',
-                                fillcolor='rgba(173, 216, 230, 0.3)'))  # Purple color for the gradient
+                                fillcolor='rgba(173, 216, 230, 0.2)'))  # Purple color for the gradient
 
         # Configure the layout
         fig4.update_layout(title='Block Size Analysis', xaxis_title='Date', yaxis_title='Block Size',
@@ -413,7 +413,7 @@ class EthereumAnalysisApp:
 
         # Add a trace for the selected Ethereum price column
         fig5.add_trace(go.Scatter(x=data.index, y=data[selected_column], mode='lines', name=selected_column, fill='tonexty',
-                                fillcolor='rgba(173, 216, 230, 0.3)'))  # Steel blue color for the gradient
+                                fillcolor='rgba(173, 216, 230, 0.2)'))  # Steel blue color for the gradient
 
         # Configure the layout
         fig5.update_layout(title='Ethereum Price Analysis', xaxis_title='Date', yaxis_title='ETH Price (USD)',
