@@ -427,6 +427,30 @@ class EthereumAnalysisApp:
         st.header("Statistical Comparison")
         st.markdown("Here, we compare pre-upgrade and post-upgrade data.")
 
+    def hypothesis_one_section(self, title, result):
+        st.markdown(f"## {title}")
+
+        # Hypothesis testing
+        if result.lower() == 'reject':    # if result is 'reject', we reject the null hypothesis
+            st.markdown('<p style="font-size:30px;font-weight:bold;color:red;">Rejected</p>', unsafe_allow_html=True)
+        else:   # if result is 'accept', we accept the null hypothesis
+            st.markdown('<p style="font-size:30px;font-weight:bold;color:green;">Accepted</p>', unsafe_allow_html=True)
+
+        # Short explanation
+        st.markdown(f"""
+            ### Metrics used
+            Put the metrics here
+            """)
+        
+        # Short explanation
+        st.markdown(f"""
+            ### Explanation
+            A hypothesis is a statement that can be tested. Here, we present the result of such a test. If 'Rejected' is displayed, 
+            this means that based on the data and the specific statistical test applied, the evidence suggests the hypothesis 
+            does not hold. Conversely, if 'Accepted' is displayed, the available data did not provide sufficient evidence to 
+            refute the hypothesis, according to the specific statistical test used.
+            """)
+
     def app_run(self):
         if self.page_selection == "Homepage":
             self.display_homepage()
@@ -439,6 +463,7 @@ class EthereumAnalysisApp:
             self.block_size_section()
         elif self.page_selection == "Statistical Comparison":
             self.statistical_comparison()
+            self.hypothesis_one_section('Hypothesis: Average Gas Price was lowered with the London Upgrade', 'reject')
 
 
 if __name__ == "__main__":
