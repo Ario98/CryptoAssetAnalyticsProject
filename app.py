@@ -55,10 +55,11 @@ class EthereumAnalysisApp:
         col1, col2 = st.columns(2)
 
         with col1:
-            st.markdown(f"**Live Ethereum Price (USD):** {eth_price}")
+            st.markdown(f"<span style='color:blue'><b>Live Ethereum Price (USD):</b></span> {eth_price}", unsafe_allow_html=True)
 
         with col2:
-            st.markdown(f"**Live Fast Gas Price (Gwei):** {gas_price}")
+            st.markdown(f"<span style='color:blue'><b>Live Fast Gas Price (Gwei):</b></span> {gas_price}", unsafe_allow_html=True)
+
 
         st.markdown("""
         ## Introduction 
@@ -75,11 +76,9 @@ class EthereumAnalysisApp:
 
         - **Homepage**: Provides an overview and instructions for the app (you are here now).
 
-        - **Pre Upgrade Data**: Presents a detailed view of the gas fees before the London upgrade.
+        - **Graphical Comparison**: Presents a detailed graphical view of the gas fees before and after the London upgrade.
 
-        - **Post Upgrade Data**: Presents a detailed view of the gas fees after the London Upgrade.
-
-        - **Comparison**: Compares the pre-upgrade and post-upgrade data, highlighting the impact of the London Upgrade on gas fees.
+        - **Statistical Comparison**: Presents our chosen hypotheses and their acceptance/rejection along with explanations.
 
         Feel free to navigate between these pages to explore the analysis. Each page will offer visualizations and insights about the data.
         """)
@@ -425,7 +424,8 @@ class EthereumAnalysisApp:
 
     def statistical_comparison(self):
         st.header("Statistical Comparison")
-        st.markdown("Here, we compare pre-upgrade and post-upgrade data.")
+        st.markdown("""In this analysis, we employ statistical tests to assess the significance of any observed differences. Non-parametric tests, such as the Wilcoxon test and Mann-Whitney U test, are used for comparing gas prices. Additionally, the Levene test and F oneway test are employed to examine the volatility in gas prices. Lastly, transaction volume is assessed using the Wilcoxon test.
+                    The findings from this analysis will shed light on whether the London Upgrade had a noticeable impact on gas prices, volatility, and transaction volume in the Ethereum network. Understanding these effects is crucial for assessing the overall efficiency and performance of the network following the upgrade.""")
 
     def hypothesis_one_section(self, title, result):
         st.markdown(f"## {title}")
@@ -438,18 +438,86 @@ class EthereumAnalysisApp:
 
         # Short explanation
         st.markdown(f"""
-            ### Metrics used
-            Put the metrics here
+            ### Tests
+            Wilcoxon Test: p-value: 8.516959372788701e-38,
+            Mann-Whitney U Test
             """)
         
         # Short explanation
         st.markdown(f"""
             ### Explanation
-            A hypothesis is a statement that can be tested. Here, we present the result of such a test. If 'Rejected' is displayed, 
-            this means that based on the data and the specific statistical test applied, the evidence suggests the hypothesis 
-            does not hold. Conversely, if 'Accepted' is displayed, the available data did not provide sufficient evidence to 
-            refute the hypothesis, according to the specific statistical test used.
+            After conducting a normality test, it was determined that the data does not follow a normal distribution. Therefore, the use of a t-test is not recommended for comparing means. 
+                    Instead, non-parametric tests are suggested as an alternative.
+            
+            A Wilcoxon test was performed, indicating that there were significantly lower gas prices in the "before" group (p-value: 8.516959372788701e-38). Similarly, the Mann-Whitney U test yielded similar results, reinforcing the finding.
             """)
+        
+    def hypothesis_two_section(self, title, result):
+        st.markdown(f"## {title}")
+
+        # Hypothesis testing
+        if result.lower() == 'reject':    # if result is 'reject', we reject the null hypothesis
+            st.markdown('<p style="font-size:30px;font-weight:bold;color:red;">Rejected</p>', unsafe_allow_html=True)
+        else:   # if result is 'accept', we accept the null hypothesis
+            st.markdown('<p style="font-size:30px;font-weight:bold;color:green;">Accepted</p>', unsafe_allow_html=True)
+
+        # Short explanation
+        st.markdown(f"""
+            ### Tests
+            Levene test_ p-value: 5.348608242819426e-13, F oneway test
+            """)
+        
+        # Short explanation
+        st.markdown(f"""
+            ### Explanation
+            Upon conducting a Levene test for variance, it was observed that the variances are not equal. This result was further supported by the F oneway test, which provided a different value due to its one-tailed nature. Despite the rejection of the null hypothesis, the difference in variances did not affect the outcome.
+
+            Furthermore, it is noteworthy that the variances are now higher.
+            """)
+        
+    def hypothesis_three_section(self, title, result):
+        st.markdown(f"## {title}")
+
+        # Hypothesis testing
+        if result.lower() == 'reject':  # if result is 'reject', we reject the null hypothesis
+            st.markdown('<p style="font-size:30px;font-weight:bold;color:red;">Rejected</p>', unsafe_allow_html=True)
+        elif result.lower() == 'accept':  # if result is 'accept', we accept the null hypothesis
+            st.markdown('<p style="font-size:30px;font-weight:bold;color:green;">Accepted</p>', unsafe_allow_html=True)
+        else:  # if result is unclear, display in blue
+            st.markdown('<p style="font-size:30px;font-weight:bold;color:blue;">Not rejected</p>', unsafe_allow_html=True)
+
+
+        # Short explanation
+        st.markdown(f"""
+            ### Tests
+            Wilcoxon Test: p-value: 0.5961928575931317
+            """)
+        
+        # Short explanation
+        st.markdown(f"""
+            ### Explanation
+            The high p-value obtained suggests that we cannot reject the null hypothesis. Consequently, we do not have sufficient evidence to assert that there is a significant change in the transaction amount before and after the upgrade. Thus, we cannot reject the null hypothesis, indicating that the transaction amounts remain the same.""")
+        
+    def hypothesis_four_section(self, title, result):
+        st.markdown(f"## {title}")
+
+        # Hypothesis testing
+        if result.lower() == 'reject':    # if result is 'reject', we reject the null hypothesis
+            st.markdown('<p style="font-size:30px;font-weight:bold;color:red;">Rejected</p>', unsafe_allow_html=True)
+        else:   # if result is 'accept', we accept the null hypothesis
+            st.markdown('<p style="font-size:30px;font-weight:bold;color:green;">Accepted</p>', unsafe_allow_html=True)
+
+        # Short explanation
+        st.markdown(f"""
+            ### Tests
+            Levene Test: p-value: 5.61180418407507e-24
+            """)
+        
+        # Short explanation
+        st.markdown(f"""
+            ### Explanation
+            It is important to note that the null hypothesis for variance equality was rejected. This implies that the variances are not equal. Furthermore, the variance is now smaller than before.            """)
+
 
     def app_run(self):
         if self.page_selection == "Homepage":
@@ -463,7 +531,10 @@ class EthereumAnalysisApp:
             self.block_size_section()
         elif self.page_selection == "Statistical Comparison":
             self.statistical_comparison()
-            self.hypothesis_one_section('Hypothesis: Average Gas Price was lowered with the London Upgrade', 'reject')
+            self.hypothesis_one_section('Hypothesis: Average Gas Price before is equal to Average Gas Price after', 'reject')
+            self.hypothesis_two_section('Hypothesis: Volatility before is equal to Volatility after', 'reject')
+            self.hypothesis_three_section('Hypothesis: The amount of transactions is equal to before the update', 'unclear')
+            self.hypothesis_four_section('Hypothesis: The variance of transactions is equal to before the update', 'reject')
 
 
 if __name__ == "__main__":
